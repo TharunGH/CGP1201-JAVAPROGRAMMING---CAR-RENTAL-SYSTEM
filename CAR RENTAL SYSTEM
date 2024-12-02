@@ -1,0 +1,97 @@
+import java.awt.*;
+import java.awt.event.*;
+
+public class CarRentalSystem {
+    public static void main(String[] args) {
+        new CarRentalFrame();
+    }
+}
+
+class CarRentalFrame extends Frame {
+    TextField nameField, daysField;
+    Choice carChoice;
+    TextArea resultArea;
+    Button rentButton, clearButton;
+
+    CarRentalFrame() {
+        setTitle("Car Rental System");
+        setSize(500, 400);
+        setLayout(new FlowLayout());
+
+        Label nameLabel = new Label("Name:");
+        nameField = new TextField(20);
+
+        Label carLabel = new Label("Car Model:");
+        carChoice = new Choice();
+        carChoice.add("Sedan - $50/day");
+        carChoice.add("SUV - $70/day");
+        carChoice.add("Hatchback - $40/day");
+
+        Label daysLabel = new Label("Days:");
+        daysField = new TextField(5);
+
+        rentButton = new Button("Rent");
+        clearButton = new Button("Clear");
+
+        resultArea = new TextArea(8, 40);
+        resultArea.setEditable(false);
+
+        add(nameLabel);
+        add(nameField);
+        add(carLabel);
+        add(carChoice);
+        add(daysLabel);
+        add(daysField);
+        add(rentButton);
+        add(clearButton);
+        add(resultArea);
+
+        rentButton.addActionListener(new RentAction());
+        clearButton.addActionListener(new ClearAction());
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+
+        setVisible(true);
+    }
+
+    class RentAction implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String name = nameField.getText();
+            String carModel = carChoice.getSelectedItem();
+            String daysText = daysField.getText();
+
+            if (name.isEmpty() || daysText.isEmpty()) {
+                resultArea.setText("Please fill in all the fields.");
+                return;
+            }
+
+            try {
+                int days = Integer.parseInt(daysText);
+                int costPerDay = carModel.contains("Sedan") ? 50
+                                : carModel.contains("SUV") ? 70
+                                : 40;
+                int totalCost = days * costPerDay;
+
+                resultArea.setText("Name: " + name + "\n");
+                resultArea.append("Car Model: " + carModel + "\n");
+                resultArea.append("Days: " + days + "\n");
+                resultArea.append("Total Cost: $" + totalCost);
+            } catch (NumberFormatException ex) {
+                resultArea.setText("Please enter a valid number of days.");
+            }
+        }
+    }
+
+    class ClearAction implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            nameField.setText("");
+            daysField.setText("");
+            resultArea.setText("");
+            carChoice.select(0);
+        }
+    }
+}
